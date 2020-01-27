@@ -29,7 +29,7 @@ git clone https://github.com/szjoz/mqtt2tcp.git /opt/mqtt2tcp
 Edit config file
 
 ```
-nano /opt/zigbee2mqtt/data/configuration.yaml
+sudo nano /opt/mqtt2tcp/configuration.yaml
 ```
 
 ### 2.1. Logger settings
@@ -85,7 +85,18 @@ e.g. [Xiaomi Smoke Detector][smoke-url], fill with "get_keys", in this example i
 In Expose Devices add new TCP integration interface, set correct IP address and port number in the config file and same IP address (static, disable DHCP) and port set to the ControlUnit.
 Create Virtual Device in App, e.g. VirtualSwitch or you can write Smoke detector state into Generic Variable. Add VirtualSwitch/Variable to Exposed Devices. Write correct ASCII command to set VirtualSwitch/Variable to the config file.
 
-## 4. Running as a daemon with systemctl
+
+## 4. Run mqtt2tcp on Startup
+### 4.1 Autostart mqtt2tcp with rc.local 
+Edit file
+```
+sudo nano /etc/rc.local
+```
+and add this line before "exit 0"
+```nohup python3 /opt/mqtt2tcp/Mqtt2Tcp.py </dev/null &>/dev/null &
+```
+
+### 4.2 Running as a daemon with systemctl
 To run mqtt2tcp as daemon (in background) and start it automatically on boot we will run mqtt2tcp with systemctl. Create a systemctl configuration file for mqtt2tcp
 
 ```
