@@ -36,7 +36,7 @@ devices:
             brightness_up_hold : 'SET 5 0 2'
         battery:
             int_val : 'SET 11 0'
-
+  '0x0000ffff0000ffff':
     friendly_name: window_kidsroom
     get_keys:
         contact:
