@@ -1,0 +1,79 @@
+# This is example how to fill configuration file
+
+logger:
+  log_prefix: Logger
+  logging_level: INFO #DEBUG,INFO
+  log_path: /var/log/Mqtt2Tcp.log
+  log_max_size: 1000000
+  log_backup_count: 20
+
+mqtt:
+  base_topic: zigbee2mqtt
+  ip: localhost
+  port: 1883
+  keepalive: 60
+
+tcp:
+  ip: 192.168.1.1
+  port: 10003
+  buffer_size: 1024
+  timeout_on_recv: 5
+
+devices:
+  '0x0000ffff0000ffff':
+    friendly_name: tradfri_remote
+    get_keys:
+        action:
+            toggle : 'SET 1 0 1'
+            toggle_hold' : 'SET 1 0 2'
+            brightness_down_click : 'SET 2 0 1'
+            brightness_down_hold : 'SET 2 0 2'
+            arrow_left_click : 'SET 3 0 1'
+            arrow_left_hold : 'SET 3 0 2'
+            arrow_right_click : 'SET 4 0 1'
+            arrow_right_hold : 'SET 4 0 2'
+            brightness_up_click : 'SET 5 0 1'
+            brightness_up_hold : 'SET 5 0 2'
+        battery:
+            int_val : 'SET 11 0'
+
+    friendly_name: window_kidsroom
+    get_keys:
+        contact:
+            false : 'SET 8 0 1'
+            true : 'SET 8 0 0'
+  '0x0000ffff0000ffff':
+    friendly_name: motion_sensor
+    get_keys:
+        occupancy:
+            false : 'SET 7 0 0'
+            true : 'SET 7 0 1' 
+  '0x0000ffff0000ffff':
+    friendly_name: smoke_detecor
+    get_keys:
+        smoke:
+            false : 'SET 12 0 0'
+            true : 'SET 12 0 1' 
+  '0x0000ffff0000ffff':
+    friendly_name: 'tradfri_rgb_bulb'
+    set_keys:
+        hsv : 'GET 11'
+    json_format: '{"brightness":0,"color":{"r":0,"g":0,"b":0},"transition":1}'
+  '0x0000ffff0000ffff':
+    friendly_name: 'motion_sensor2'
+    get_keys:
+        occupancy:
+            false : 'SET 13 0 0'
+            true : 'SET 13 0 1'
+        illuminance:
+            int_val : 'SET 14 0'
+  '0x0000ffff0000ffff':
+    friendly_name: 'tradfri_socket'
+    set_keys:
+        state: 'GET 15'
+    json_format: '{"state":"OFF"}'
+  '0x0000ffff0000ffff':
+    friendly_name: 'hue_rgb_bulb'
+    set_keys:
+        hsv : 'GET 16'
+    json_format: '{"brightness":0,"color":{"r":0,"g":0,"b":0},"transition":1}'
