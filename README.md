@@ -93,7 +93,8 @@ Edit file
 sudo nano /etc/rc.local
 ```
 and add this line before "exit 0"
-```nohup python3 /opt/mqtt2tcp/Mqtt2Tcp.py </dev/null &>/dev/null &
+```
+nohup python3 /opt/mqtt2tcp/Mqtt2Tcp.py </dev/null &>/dev/null &
 ```
 
 ### 4.2 Running as a daemon with systemctl
