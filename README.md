@@ -7,13 +7,14 @@ The primary purpose of the Mqtt2Tcp Server is to translate MQTT Messages to TCP/
 These instructions explain how to run Mqtt2Tcp Server on single-board computers like Raspberry Pi, Orange Pi, etc. Allows to use with Zigbee2mqtt, It bridges events and allows you to control your Zigbee devices over MQTT service. In this way you can integrate your Zigbee devices with whatever smart home infrastructure you are using.
 To run this bridge, you need the following hardware:
 * Raspberry Pi board
-* MicroSD card with installed [Rapbian][raspi-url]
+* MicroSD card with installed [Raspberry Pi OS][raspi-url] (previously called Raspbian). E.g. Raspberry Pi OS (32-bit) Lite.
 * Power supply with at least 1A output
 * CC2531 USB Dongle /*/
 * [Supported Zigbee devices][devices-url]
 
 /*/ Note: You need to flash CC2531 USB Dongle with CC Debugger or You can purchase with pre-programmed firmware. Instructions [here][cc-debugger-url].
 
+Tip: To Enable SSH on a Raspberry Pi add file to SD card on another machine  a file named ssh, without any extension. Instructions [here][ssh-instructions-url].
 
 At first you need to install Zigbee bridge Zigbee2Mqtt, follow these [instructions][instructions-url].
 
@@ -36,8 +37,9 @@ You also need to install paho-mqtt and YAML parser
 sudo pip3 install paho-mqtt pyyaml
 ```
 Grant access to folders
+```
 sudo chown -R pi:pi /opt/mqtt2tcp/ /var/log/
-
+```
 ## 2. Configuring Mqtt2Tcp
 
 Edit config file
@@ -168,6 +170,7 @@ sudo tail -f /var/log/Mqtt2Tcp.log
 ```
 
 [raspi-url]: <https://www.raspberrypi.org/downloads/>
+[ssh-instructions-url]: <https://www.raspberrypi.org/documentation/remote-access/ssh/>
 [cc-debugger-url]: <https://www.zigbee2mqtt.io/getting_started/flashing_the_cc2531.html>
 [devices-url]: <https://www.zigbee2mqtt.io/information/supported_devices.html>
 [instructions-url]: <https://www.zigbee2mqtt.io/getting_started/running_zigbee2mqtt.html>
