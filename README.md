@@ -21,8 +21,22 @@ At first you need to install Zigbee bridge Zigbee2Mqtt, follow these [instructio
 
 Clone mqtt2tcp repository
 ```
-git clone https://github.com/szjoz/mqtt2tcp.git /opt/mqtt2tcp
+sudo git clone https://github.com/szjoz/mqtt2tcp.git /opt/mqtt2tcp
 ```
+You need to install MQTT mosquitto
+```
+sudo apt-get install mosquitto
+```
+Install the python library paho-mqtt using pip3
+```
+sudo apt-get install python3-pip
+```
+You also need to install paho-mqtt and YAML parser
+```
+sudo pip3 install paho-mqtt pyyaml
+```
+Grant access to folders
+sudo chown -R pi:pi /opt/mqtt2tcp/ /var/log/
 
 ## 2. Configuring Mqtt2Tcp
 
@@ -31,6 +45,8 @@ Edit config file
 ```
 sudo nano /opt/mqtt2tcp/configuration.yaml
 ```
+
+
 
 ### 2.1. Logger settings
 
