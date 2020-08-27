@@ -45,7 +45,7 @@ def process_tcp_message(config, tcp_valid_message):
 
 	for key,value in config['devices'].items():
 		try:
-			logger.debug("Device: " +  str(value['friendly_name']) + ". Show set_values:" + str(value['set_keys']) + ". Show json_format from yaml:" + str(value['json_format']))
+			logger.debug("Device: " +  str(value['friendly_name']) + ". Show set_values:" + str(value['set_keys']) + ".")
 			for k,v in value['set_keys'].items():
 				logger.debug("Device: " +  str(value['friendly_name']) + ". Show action set_keys:" + str(k) + ", " + str(v) + ".")
 				if (v != None):
@@ -57,40 +57,51 @@ def process_tcp_message(config, tcp_valid_message):
 					values.pop(1) # remove unused value
 					values.pop(0) # remove unused value
 					if device_id_from_conf == device_id:
-						json_object = json.loads(value['json_format'])
-						logger.debug("Read JSON Format:" + value['json_format'])
-						logger.debug("Print JSON object:" + str(json_object))
-						if len(values) == 1 and k == 'state': #boolean
-							logger.debug("Size:" + str(len(values)) + ", Bool values:" + str(values))
-							if float(values[0]) == 1:
-								json_object[k] = 'ON'
+						if 'json_format' in value:
+							json_object = json.loads(value['json_format'])
+							logger.info("Read JSON Format:" + value['json_format'])
+							logger.info("Print JSON object:" + str(json_object))
+							
+							if len(values) == 1 and k == 'state': #boolean
+								logger.debug("Size:" + str(len(values)) + ", Bool values:" + str(values))
+								if float(values[0]) == 1:
+									json_object[k] = 'ON'
+								else:
+									json_object[k] = 'OFF'
+
+								logger.info("Send JSON BOOLEAN:" + str(json_object))
+								json_data = json.dumps(json_object)
+								client.publish("zigbee2mqtt/" + value['friendly_name'] + "/set", json_data);
+							elif len(values) != 1 and k == 'hsv': #RGB
+								logger.debug("Size:" + str(len(values)) + ", HSV values:" + str(values))
+								r,g,b = colorsys.hsv_to_rgb(float(values[0])/360.0, float(values[1]), float(values[2]))
+								logger.debug("Print R:" + str(r*255) + " G:" + str(g*255) + " B:" + str(b*255))
+								json_object['color']['r'] = r*255
+								json_object['color']['g'] = g*255
+								json_object['color']['b'] = b*255
+								if float(values[2]) > 0.05:
+									json_object['brightness'] = float(values[2])*255
+								else:
+									json_object['brightness'] = 0
+
+								#json_data = json.dumps({"brightness":json_object['brightness']})
+								#client.publish("zigbee2mqtt/" + value['friendly_name'] + "/set", json_data);
+
+								logger.info("Send JSON RGB/HSV:" + str(json_object))
+								json_data = json.dumps(json_object)
+								client.publish("zigbee2mqtt/" + value['friendly_name'] + "/set", json_data);
 							else:
-								json_object[k] = 'OFF'
-
-							logger.info("Send JSON BOOLEAN:" + str(json_object))
-							json_data = json.dumps(json_object)
-							client.publish("zigbee2mqtt/" + value['friendly_name'] + "/set", json_data);
-						elif len(values) != 1 and k == 'hsv': #RGB
-							logger.debug("Size:" + str(len(values)) + ", HSV values:" + str(values))
-							r,g,b = colorsys.hsv_to_rgb(float(values[0])/360.0, float(values[1]), float(values[2]))
-							logger.debug("Print R:" + str(r*255) + " G:" + str(g*255) + " B:" + str(b*255))
-							json_object['color']['r'] = r*255
-							json_object['color']['g'] = g*255
-							json_object['color']['b'] = b*255
-							if float(values[2]) > 0.05:
-								json_object['brightness'] = float(values[2])*255
-							else:
-								json_object['brightness'] = 0
-
-							#json_data = json.dumps({"brightness":json_object['brightness']})
-							#client.publish("zigbee2mqtt/" + value['friendly_name'] + "/set", json_data);
-
-							logger.info("Send JSON RGB/HSV:" + str(json_object))
-							json_data = json.dumps(json_object)
-							client.publish("zigbee2mqtt/" + value['friendly_name'] + "/set", json_data);
-
+								logger.info("Size:" + str(len(values)) + ", value:" + str(values))
 						else:
-							logger.info("Size:" + str(len(values)) + ", value:" + str(values))
+							if len(values) == 1:
+								if float(values[0]) > 0.05:
+									parsed_value = float(values[0])
+								else:
+									parsed_value = 0
+
+								json_data = json.dumps({k:parsed_value, "transition":1})
+								logger.info("Send JSON GENERIC:" + str(json_data))
+								client.publish("zigbee2mqtt/" + value['friendly_name'] + "/set", json_data);
 
 		except:
 			logger.debug("No set_keys defined for device " + str(value['friendly_name']))
@@ -111,7 +122,14 @@ def tcp_connection_thread(config, ):
 
 				s.connect((config['tcp']['ip'], config['tcp']['port']))
 				logger.info("Opening TCP socket:" + str(config['tcp']['ip']) + ":" + str(config['tcp']['port']) + " successful.")
-				s.send(str('PUSHALL ON\r\n').encode())
+				try:
+					logger.info("TCP init messages:" + str(config['tcp']['messages_on_init']))
+					for mess_on_init in config['tcp']['messages_on_init']:
+						logger.info("Sending init message:" + str(mess_on_init))
+						s.send(str(mess_on_init + '\r\n').encode())
+				except:
+					logger.info("TCP init messages: 'messages_on_init' empty or missing.")		
+
 				socket_connected = True
 				socket_need_reconnect = False
 			except:
@@ -259,4 +277,3 @@ u = Thread(target=tcp_receive_thread, args=())
 u.start()
 
 client.loop_forever()
-

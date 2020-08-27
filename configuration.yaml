@@ -18,6 +18,9 @@ tcp:
   port: 10003
   buffer_size: 1024
   timeout_on_recv: 5
+  messages_on_init:
+    - 'HEADER OFF'
+    - 'PUSHALL ON'
 
 devices:
   '0x0000ffff0000ffff':
@@ -77,3 +80,9 @@ devices:
     set_keys:
         hsv : 'GET 16'
     json_format: '{"brightness":0,"color":{"r":0,"g":0,"b":0},"transition":1}'
+
+  '0x0012880500bej0e2':
+    friendly_name: 'hue_rgb'
+    set_keys:
+        color_temp : 'GET 19'
+        brightness : 'GET 20'
